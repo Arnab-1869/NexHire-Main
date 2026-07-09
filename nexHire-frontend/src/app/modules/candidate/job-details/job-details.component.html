@@ -1,0 +1,92 @@
+<div class="job-details-container">
+  <app-loader *ngIf="loading"></app-loader>
+
+  <div *ngIf="!loading && job" class="job-details">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <button mat-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Jobs
+      </button>
+    </div>
+
+    <!-- Job Header -->
+    <mat-card class="job-header-card">
+      <mat-card-content>
+        <h1>{{ job.jobTitle }}</h1>
+        <div class="job-meta">
+          <div class="meta-item">
+            <mat-icon>business</mat-icon>
+            <span>{{ job.companyName || 'NexHire' }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ job.location }}</span>
+          </div>
+          <div class="meta-item" *ngIf="job.jobType">
+            <mat-icon>work</mat-icon>
+            <span>{{ job.jobType }}</span>
+          </div>
+          <div class="meta-item" *ngIf="job.openings">
+            <mat-icon>people</mat-icon>
+            <span>{{ job.openings }} openings</span>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" class="apply-btn" (click)="applyForJob()">
+          Apply for this Job
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Job Details -->
+    <mat-card class="job-content-card">
+      <mat-card-content>
+        <section class="detail-section">
+          <h2>Job Description</h2>
+          <p>{{ job.jobDescription }}</p>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <section class="detail-section">
+          <h2>Required Skills</h2>
+          <div class="skills-chips">
+            <mat-chip *ngFor="let skill of job.requiredSkills.split(',')">
+              {{ skill.trim() }}
+            </mat-chip>
+          </div>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <section class="detail-section" *ngIf="job.experienceLevel || job.minExperience !== undefined">
+          <h2>Experience Required</h2>
+          <p *ngIf="job.experienceLevel">Level: {{ job.experienceLevel }}</p>
+          <p *ngIf="job.minExperience !== undefined || job.maxExperience !== undefined">
+            {{ job.minExperience || 0 }} - {{ job.maxExperience || 0 }} years
+          </p>
+        </section>
+
+        <mat-divider *ngIf="job.experienceLevel || job.minExperience !== undefined"></mat-divider>
+
+        <section class="detail-section" *ngIf="job.salaryMin || job.salaryMax">
+          <h2>Salary Range</h2>
+          <p>{{ job.currency || 'INR' }} {{ job.salaryMin?.toLocaleString() }} - {{ job.salaryMax?.toLocaleString() }}</p>
+        </section>
+
+        <mat-divider *ngIf="job.salaryMin || job.salaryMax"></mat-divider>
+
+        <section class="detail-section">
+          <h2>Application Deadline</h2>
+          <p>{{ job.deadline | date: 'MMMM dd, yyyy' }}</p>
+        </section>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <app-empty-state 
+    *ngIf="!loading && !job"
+    message="Job not found"
+    icon="work_outline">
+  </app-empty-state>
+</div>

@@ -1,0 +1,47 @@
+<div class="timeline-container">
+  <div *ngIf="sortedEvents.length === 0" class="timeline-empty">
+    <app-empty-state 
+      [icon]="'timeline'" 
+      [title]="emptyMessage">
+    </app-empty-state>
+  </div>
+
+  <div *ngIf="sortedEvents.length > 0" class="timeline">
+    <div *ngFor="let event of sortedEvents; let isLast = last" 
+         class="timeline-item" 
+         [class.timeline-item-last]="isLast">
+      <div class="timeline-marker">
+        <div class="timeline-icon" [ngClass]="'timeline-icon-' + event.type">
+          <mat-icon>{{ getEventIcon(event.type) }}</mat-icon>
+        </div>
+        <div *ngIf="!isLast" class="timeline-line"></div>
+      </div>
+
+      <div class="timeline-content">
+        <div class="timeline-header">
+          <h4 class="timeline-title">{{ event.title }}</h4>
+          <span class="timeline-timestamp">{{ event.timestamp | relativeDate }}</span>
+        </div>
+
+        <p class="timeline-description">{{ event.description }}</p>
+
+        <div *ngIf="isStatusChangeEvent(event)" class="timeline-status-change">
+          <span class="status-change-label">Status changed:</span>
+          <app-status-badge 
+            *ngIf="getOldStatus(event)" 
+            [status]="getOldStatus(event)">
+          </app-status-badge>
+          <mat-icon *ngIf="getOldStatus(event)" class="status-arrow">arrow_forward</mat-icon>
+          <app-status-badge 
+            [status]="getNewStatus(event)">
+          </app-status-badge>
+        </div>
+
+        <div class="timeline-actor">
+          <mat-icon class="actor-icon">person</mat-icon>
+          <span>{{ event.actorName }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

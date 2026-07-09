@@ -1,0 +1,12 @@
+package com.nexhire.enums;
+
+public enum BgvStatus {
+    NOT_INITIATED,
+    INITIATED,
+    DOCUMENTS_PENDING,
+    DOCUMENTS_SUBMITTED,
+    VERIFICATION_IN_PROGRESS,
+    CLEARED,
+    FAILED,
+    RECHECK_REQUIRED
+}

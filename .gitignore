@@ -1,0 +1,14 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Frontend generated folders
+nexHire-frontend/node_modules/
+nexHire-frontend/dist/
+nexHire-frontend/.angular/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

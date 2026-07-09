@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f1f5f9;
+}
+
+body {
+  margin: 0;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+}
+
+tr.mat-mdc-header-row {
+  background-color: #f8fafc;
+}
+
+th.mat-mdc-header-cell {
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 16px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+td.mat-mdc-cell {
+  padding: 16px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+}
+
+tr.mat-mdc-row:hover {
+  background-color: #f8fafc;
+}
+
+.bold-text {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Material Field Adjustments */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-raised-button {
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}

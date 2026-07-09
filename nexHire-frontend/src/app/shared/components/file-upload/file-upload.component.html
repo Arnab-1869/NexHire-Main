@@ -1,0 +1,102 @@
+<div class="file-upload-container">
+  <div 
+    class="dropzone"
+    [class.drag-over]="isDragOver"
+    [class.has-files]="selectedFiles.length > 0"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    
+    <input 
+      #fileInput
+      type="file"
+      [multiple]="multiple"
+      [accept]="acceptAttribute"
+      (change)="onFileSelected($event)"
+      class="file-input"
+      id="file-upload-input"
+      [attr.aria-label]="label">
+    
+    <div class="dropzone-content">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+      
+      <div class="dropzone-text">
+        <p class="primary-text">{{ label }}</p>
+        <p class="secondary-text">Drag and drop files here or</p>
+        <button 
+          mat-raised-button 
+          color="primary"
+          type="button"
+          (click)="fileInput.click()"
+          [disabled]="isUploading"
+          aria-label="Browse files">
+          Browse Files
+        </button>
+      </div>
+      
+      <div class="dropzone-hint" *ngIf="allowedTypes.length > 0 || maxSizeMB">
+        <p class="hint-text">
+          <span *ngIf="allowedTypes.length > 0">Allowed types: {{ allowedTypes.join(', ') }}</span>
+          <span *ngIf="allowedTypes.length > 0 && maxSizeMB"> | </span>
+          <span *ngIf="maxSizeMB">Max size: {{ maxSizeMB }} MB</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Files List -->
+  <div class="selected-files" *ngIf="selectedFiles.length > 0">
+    <h4 class="files-heading">Selected Files</h4>
+    <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
+      <mat-icon class="file-icon">insert_drive_file</mat-icon>
+      <div class="file-info">
+        <span class="file-name">{{ file.name }}</span>
+        <span class="file-size">{{ (file.size / 1024).toFixed(2) }} KB</span>
+      </div>
+      <button 
+        mat-icon-button 
+        (click)="removeFile(i)"
+        [disabled]="isUploading"
+        [attr.aria-label]="'Remove ' + file.name"
+        type="button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload Progress -->
+  <div class="upload-progress" *ngIf="isUploading">
+    <mat-progress-bar 
+      mode="determinate" 
+      [value]="uploadProgress$ | async"
+      aria-label="Upload progress">
+    </mat-progress-bar>
+    <p class="progress-text">Uploading... {{ uploadProgress$ | async }}%</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage" role="alert">
+    <mat-icon class="error-icon">error</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Upload Button -->
+  <div class="upload-actions" *ngIf="selectedFiles.length > 0 && !isUploading">
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="uploadFiles()"
+      type="button"
+      aria-label="Upload selected files">
+      <mat-icon>upload</mat-icon>
+      Upload
+    </button>
+    <button 
+      mat-button
+      (click)="clearSelection()"
+      type="button"
+      aria-label="Clear selection">
+      Clear
+    </button>
+  </div>
+</div>
