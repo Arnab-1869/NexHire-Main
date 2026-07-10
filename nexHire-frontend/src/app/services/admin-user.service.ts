@@ -36,7 +36,7 @@ export class AdminUserService extends BaseService {
   }
 
   activate(id: number): Observable<AdminUser> {
-    return this.http.put<AdminUser>(`/api/users/${id}/activate`, {});
+    return this.http.put<AdminUser>(`${API_ENDPOINTS.USERS.BASE}/${id}/activate`, {});
   }
 
   createUser(payload: any): Observable<AdminUser> {

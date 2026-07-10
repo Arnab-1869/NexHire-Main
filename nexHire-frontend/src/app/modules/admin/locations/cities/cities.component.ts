@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { API_ENDPOINTS } from '../../../../config/api-endpoints';
 
 @Component({
     selector: 'app-cities',
@@ -105,7 +106,7 @@ export class CitiesComponent implements OnInit {
   }
 
   loadLocations(): void {
-    this.http.get<any[]>('/api/locations').subscribe({
+    this.http.get<any[]>(API_ENDPOINTS.LOCATIONS.BASE).subscribe({
       next: list => this.locations = list || [],
       error: () => this.toastService.error('Failed to load locations.')
     });
@@ -117,7 +118,7 @@ export class CitiesComponent implements OnInit {
       return;
     }
     this.loading = true;
-    this.http.post<any>('/api/locations', this.newLocation).subscribe({
+    this.http.post<any>(API_ENDPOINTS.LOCATIONS.BASE, this.newLocation).subscribe({
       next: created => {
         this.toastService.success('Location created successfully.');
         this.locations = [created, ...this.locations];

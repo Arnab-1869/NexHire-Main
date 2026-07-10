@@ -143,6 +143,29 @@ public class DashboardService {
                 List.of("#f59e0b", "#22c55e", "#3b82f6"));
     }
 
+    public ChartDataResponse getBudgetChart() {
+        List<HiringBudget> budgets = hiringBudgetRepository.findAll();
+        long totalBudget = budgets.stream().mapToLong(HiringBudget::getBudgetAmount).sum();
+        long usedBudget = budgets.stream().mapToLong(HiringBudget::getUsedAmount).sum();
+        long remainingBudget = totalBudget - usedBudget;
+
+        return chart("Budget (₹)",
+                List.of("Used", "Remaining"),
+                List.of(usedBudget, remainingBudget),
+                List.of("#ef4444", "#22c55e"));
+    }
+
+    public ChartDataResponse getProjectChart() {
+        long totalProjects = projectRepository.count();
+        long assignedCount = applicationRepository.countByStatus(ApplicationStatus.PROJECT_ASSIGNED);
+        long completedTraining = applicationRepository.countByStatus(ApplicationStatus.TRAINING_COMPLETED);
+
+        return chart("Projects",
+                List.of("Total Projects", "Assigned to Projects", "Awaiting Assignment"),
+                List.of(totalProjects, assignedCount, completedTraining),
+                List.of("#3b82f6", "#22c55e", "#f59e0b"));
+    }
+
     private long countBgv(BgvStatus status) {
         return bgvRepository.findAll().stream().filter(b -> b.getStatus() == status).count();
     }

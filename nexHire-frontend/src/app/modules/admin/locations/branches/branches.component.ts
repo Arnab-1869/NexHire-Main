@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { API_ENDPOINTS } from '../../../../config/api-endpoints';
 
 @Component({
     selector: 'app-branches',
@@ -89,7 +90,7 @@ export class BranchesComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.http.get<any[]>('/api/locations').subscribe({
+    this.http.get<any[]>(API_ENDPOINTS.LOCATIONS.BASE).subscribe({
       next: list => this.branches = list || [],
       error: () => this.toastService.error('Failed to load branches.')
     });
@@ -101,7 +102,7 @@ export class BranchesComponent implements OnInit {
       return;
     }
     this.loading = true;
-    this.http.post<any>('/api/locations', this.newBranch).subscribe({
+    this.http.post<any>(API_ENDPOINTS.LOCATIONS.BASE, this.newBranch).subscribe({
       next: created => {
         this.toastService.success('Branch created successfully.');
         this.branches = [created, ...this.branches];

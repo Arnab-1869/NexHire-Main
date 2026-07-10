@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../shared/services/toast.service';
 import { ROLE_DEFAULT_PERMISSIONS } from '../../../models/role-permission.model';
 import { CurrentUserService } from '../../../core/auth/current-user.service';
+import { API_ENDPOINTS } from '../../../config/api-endpoints';
 
 @Component({
   selector: 'app-roles-mgmt',
@@ -201,7 +202,7 @@ export class RolesComponent implements OnInit {
   }
 
   loadRoles(): void {
-    this.http.get<any[]>('/api/roles').subscribe({
+    this.http.get<any[]>(API_ENDPOINTS.ROLES.BASE).subscribe({
       next: data => this.roles = data,
       error: () => this.toast.error('Failed to load system roles.')
     });

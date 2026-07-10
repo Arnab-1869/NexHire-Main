@@ -192,6 +192,11 @@ export class MockInterceptor implements HttpInterceptor {
         return this.handleAssets(method, path, body);
       }
 
+      // ── Special-case: /api/locations ────────────────────────────────────
+      if (path.startsWith('/api/locations')) {
+        return this.handleLocations(method, path, body);
+      }
+
       // ── Special-case: /api/activity-logs ────────────────────────────────
       if (path.startsWith('/api/activity-logs')) {
         return this.createSuccessResponse([
@@ -1163,6 +1168,72 @@ export class MockInterceptor implements HttpInterceptor {
         assignedAt: new Date().toISOString()
       }));
       return this.createSuccessResponse(list, 200);
+    }
+
+    return this.createSuccessResponse([], 200);
+  }
+
+  private mockLocations: any[] = [
+    {
+      id: 1,
+      name: 'Bangalore HQ',
+      city: 'Bangalore',
+      budgetTotal: 100,
+      budgetUsed: 40,
+      budgetAvailable: 60,
+      seatsTotal: 120,
+      seatsOccupied: 45,
+      seatsAvailable: 75,
+      budgetAmount: 10000000,
+      usedAmount: 4000000,
+      remainingAmount: 6000000
+    },
+    {
+      id: 2,
+      name: 'Mumbai Office',
+      city: 'Mumbai',
+      budgetTotal: 50,
+      budgetUsed: 20,
+      budgetAvailable: 30,
+      seatsTotal: 60,
+      seatsOccupied: 20,
+      seatsAvailable: 40,
+      budgetAmount: 5000000,
+      usedAmount: 2000000,
+      remainingAmount: 3000000
+    }
+  ];
+
+  private handleLocations(method: string, path: string, body: any): Observable<HttpEvent<any>> {
+    if (method === 'GET' && path === '/api/locations') {
+      return this.createSuccessResponse(this.mockLocations, 200);
+    }
+    
+    if (method === 'POST' && path === '/api/locations') {
+      const newLoc = {
+        id: this.mockLocations.length + 1,
+        name: body.name,
+        city: body.city,
+        budgetTotal: body.budgetTotalSlots || 60,
+        budgetUsed: 0,
+        budgetAvailable: body.budgetTotalSlots || 60,
+        seatsTotal: body.seatsTotalSeats || 60,
+        seatsOccupied: 0,
+        seatsAvailable: body.seatsTotalSeats || 60,
+        budgetAmount: body.budgetAmount || 5000000,
+        usedAmount: 0,
+        remainingAmount: body.budgetAmount || 5000000
+      };
+      this.mockLocations.push(newLoc);
+      return this.createSuccessResponse(newLoc, 200);
+    }
+
+    const matchId = path.match(/^\/api\/locations\/(\d+)$/);
+    if (method === 'GET' && matchId) {
+      const id = parseInt(matchId[1], 10);
+      const loc = this.mockLocations.find(l => l.id === id);
+      if (loc) return this.createSuccessResponse(loc, 200);
+      return this.createErrorResponse(404, 'Location not found');
     }
 
     return this.createSuccessResponse([], 200);

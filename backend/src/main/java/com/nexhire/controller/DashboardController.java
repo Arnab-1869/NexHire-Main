@@ -46,4 +46,14 @@ public class DashboardController {
     public ResponseEntity<ChartDataResponse> getTrainingChart() {
         return ResponseEntity.ok(dashboardService.getTrainingChart());
     }
+
+    @GetMapping("/charts/budget")
+    public ResponseEntity<ChartDataResponse> getBudgetChart() {
+        return ResponseEntity.ok(dashboardService.getBudgetChart());
+    }
+
+    @GetMapping("/charts/projects")
+    public ResponseEntity<ChartDataResponse> getProjectChart() {
+        return ResponseEntity.ok(dashboardService.getProjectChart());
+    }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { API_ENDPOINTS } from '../../../../config/api-endpoints';
 
 @Component({
     selector: 'app-blocks',
@@ -95,14 +96,14 @@ export class BlocksComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.http.get<any[]>('/api/locations').subscribe({
+    this.http.get<any[]>(API_ENDPOINTS.LOCATIONS.BASE).subscribe({
       next: list => this.branches = list || [],
       error: () => this.toastService.error('Failed to load branches.')
     });
   }
 
   loadBlocks(): void {
-    this.http.get<any[]>('/api/training/blocks').subscribe({
+    this.http.get<any[]>(API_ENDPOINTS.TRAINEES.BLOCKS).subscribe({
       next: list => this.blocks = list || [],
       error: () => this.toastService.error('Failed to load training blocks.')
     });
@@ -114,7 +115,7 @@ export class BlocksComponent implements OnInit {
       return;
     }
     this.loading = true;
-    this.http.post<any>('/api/training/blocks', this.newBlock).subscribe({
+    this.http.post<any>(API_ENDPOINTS.TRAINEES.BLOCKS, this.newBlock).subscribe({
       next: block => {
         this.toastService.success('Block created successfully.');
         this.blocks = [block, ...this.blocks];

@@ -67,29 +67,7 @@ export class TrainingService extends BaseService {
 
   getSelectedCandidates(): Observable<SelectedCandidate[]> {
     if (environment.useMockData) {
-      // Fetch QUALIFIED applications from the real backend and map to SelectedCandidate shape.
-      return this.http
-        .get<any[]>(`${environment.apiBaseUrl}/api/applications`)
-        .pipe(
-          map((apps: any[]) =>
-            (apps || [])
-              .filter((a: any) => a.status === 'QUALIFIED')
-              .map((a: any) => ({
-                selectedId: a.id,
-                employeeId: a.userId,
-                candidateName: a.userName,
-                candidateEmail: a.userEmail,
-                jobTitle: a.jobTitle,
-                trainingDomain: a.jobTitle?.includes('Java')
-                  ? 'JAVA'
-                  : a.jobTitle?.includes('Angular')
-                    ? 'ANGULAR'
-                    : 'FULLSTACK',
-                status: 'SELECTED' as SelectedStatus,
-                selectionDate: a.updatedAt || a.appliedAt,
-              })),
-          ),
-        );
+      return of(MOCK_SELECTED).pipe(delay(300));
     }
     return this.http
       .get<
