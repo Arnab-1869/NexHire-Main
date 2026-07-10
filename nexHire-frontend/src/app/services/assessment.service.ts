@@ -53,9 +53,8 @@ export class AssessmentService extends BaseService {
 
   // ─── Compatibility shims for the existing assessments UI ─────────────────────
 
-  /** No dedicated list endpoint; the applications view is the source of truth. */
   getAll(): Observable<Assessment[]> {
-    return of([]);
+    return this.http.get<Assessment[]>(API_ENDPOINTS.ASSESSMENTS.BASE);
   }
 
   /**

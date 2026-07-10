@@ -12,10 +12,15 @@ const MOCK_PROJECTS: Project[] = [
   { projectId: 1, projectName: 'Banking Portal', clientName: 'HDFC Bank', requiredDomain: 'JAVA', requiredSkills: 'Java, Spring Boot, MySQL', requiredCount: 5, allocatedCount: 2, remainingCount: 3, status: 'ACTIVE', startDate: '2026-09-01' },
   { projectId: 2, projectName: 'E-Commerce Platform', clientName: 'RetailMart', requiredDomain: 'REACT', requiredSkills: 'React, TypeScript, REST APIs', requiredCount: 4, allocatedCount: 1, remainingCount: 3, status: 'ACTIVE', startDate: '2026-09-15' },
   { projectId: 3, projectName: 'Data Analytics Dashboard', clientName: 'FinTech Corp', requiredDomain: 'PYTHON', requiredSkills: 'Python, Pandas, Matplotlib', requiredCount: 3, allocatedCount: 3, remainingCount: 0, status: 'ACTIVE', startDate: '2026-08-01' },
+  { projectId: 4, projectName: 'DevOps Automation Pipeline', clientName: 'Cloud Solutions', requiredDomain: 'DEVOPS', requiredSkills: 'Docker, Kubernetes, Jenkins, AWS', requiredCount: 2, allocatedCount: 0, remainingCount: 2, status: 'ACTIVE', startDate: '2026-10-01' },
+  { projectId: 5, projectName: 'HR Admin Dashboard', clientName: 'Internal Tech', requiredDomain: 'ANGULAR', requiredSkills: 'Angular 19, TypeScript, Material CSS', requiredCount: 3, allocatedCount: 1, remainingCount: 2, status: 'ACTIVE', startDate: '2026-07-20' }
 ];
 
 const MOCK_RELEASED: ReleasedCandidate[] = [
-  { releasedId: 1, traineeId: 1, employeeId: 101, candidateName: 'Rahul Singh', candidateEmail: 'rahul@nexhire.com', trainingDomain: 'JAVA', trainingName: 'Java Training', releaseDate: '2026-09-01', projectAllocationStatus: 'NOT_ALLOCATED' },
+  { releasedId: 1, traineeId: 1, employeeId: 101, candidateName: 'Rahul Singh', candidateEmail: 'rahul@nexhire.com', trainingDomain: 'JAVA', trainingName: 'Java Enterprise Training', releaseDate: '2026-09-01', projectAllocationStatus: 'NOT_ALLOCATED' },
+  { releasedId: 2, traineeId: 3, employeeId: 104, candidateName: 'Kunal Sen', candidateEmail: 'kunal@example.com', trainingDomain: 'PYTHON', trainingName: 'Python Data Science Training', releaseDate: '2026-07-10', projectAllocationStatus: 'NOT_ALLOCATED' },
+  { releasedId: 3, traineeId: 5, employeeId: 106, candidateName: 'Vikram Reddy', candidateEmail: 'vikram@example.com', trainingDomain: 'JAVA', trainingName: 'Java Enterprise Training', releaseDate: '2026-07-08', projectAllocationStatus: 'ALLOCATED', projectId: 1, projectName: 'Banking Portal' },
+  { releasedId: 4, traineeId: 6, employeeId: 107, candidateName: 'Sneha Patel', candidateEmail: 'sneha@example.com', trainingDomain: 'ANGULAR', trainingName: 'Angular UI Training', releaseDate: '2026-07-09', projectAllocationStatus: 'NOT_ALLOCATED' }
 ];
 
 @Injectable({ providedIn: 'root' })

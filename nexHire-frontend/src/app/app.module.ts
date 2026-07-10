@@ -54,6 +54,7 @@ import { SystemSettingsComponent } from './modules/admin/system-settings/system-
 import { CitiesComponent } from './modules/admin/locations/cities/cities.component';
 import { BranchesComponent } from './modules/admin/locations/branches/branches.component';
 import { BlocksComponent } from './modules/admin/locations/blocks/blocks.component';
+import { RolesComponent } from './modules/admin/roles/roles.component';
 
 // ─── Error Components ─────────────────────────────────────────────────────────
 import { UnauthorizedComponent } from './modules/errors/unauthorized.component';
@@ -101,6 +102,7 @@ import { NotFoundComponent } from './modules/errors/not-found.component';
     CitiesComponent,
     BranchesComponent,
     BlocksComponent,
+    RolesComponent,
     // Errors
     UnauthorizedComponent,
     NotFoundComponent,

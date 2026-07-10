@@ -65,34 +65,10 @@ public class TrainingAssignmentService {
                     ". Required: " + candidateCount + ", Available: " + availableSeats);
         }
 
-        // Validate location city budget
-        Location location = block.getLocation();
-        HiringBudget budget = hiringBudgetRepository.findByLocationId(location.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("No hiring budget configured for location: " + location.getName()));
-
-        double trainingCost = batch.getTraining().getCostPerCandidate() * candidateCount;
-        double availableBudget = budget.getBudgetAmount() - budget.getUsedAmount();
-        if (availableBudget < trainingCost) {
-            throw new InvalidStateTransitionException("Insufficient hiring budget for location: " + location.getName() +
-                    ". Required: " + trainingCost + ", Available: " + availableBudget);
-        }
-
         // Perform transactional updates
-        // 1. Deduct budget
-        budget.setUsedAmount(budget.getUsedAmount() + (long) trainingCost);
-        budget.setUsedSlots(budget.getUsedSlots() + candidateCount);
-        hiringBudgetRepository.save(budget);
-
-        // 2. Update block seats
+        // 1. Update block seats
         block.setOccupiedSeats(block.getOccupiedSeats() + candidateCount);
         trainingBlockRepository.save(block);
-
-        // 3. Update training seats occupancy
-        TrainingSeat seat = trainingSeatRepository.findByLocationId(location.getId()).orElse(null);
-        if (seat != null) {
-            seat.setOccupiedSeats(seat.getOccupiedSeats() + candidateCount);
-            trainingSeatRepository.save(seat);
-        }
 
         // 4. Create trainees and training records
         for (JoiningBatchCandidate cand : acceptedCandidates) {

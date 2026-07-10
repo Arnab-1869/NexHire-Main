@@ -24,6 +24,7 @@ public class TrainingController {
     private final TrainingAssignmentService assignmentService;
     private final com.nexhire.repository.TrainingRepository trainingRepository;
     private final com.nexhire.repository.TrainingBlockRepository trainingBlockRepository;
+    private final com.nexhire.repository.LocationRepository locationRepository;
 
     @GetMapping("/programs")
     @PreAuthorize("hasRole('HR')")
@@ -32,9 +33,30 @@ public class TrainingController {
     }
 
     @GetMapping("/blocks")
-    @PreAuthorize("hasRole('HR')")
+    @PreAuthorize("hasAnyRole('HR', 'ADMIN')")
     public ResponseEntity<List<com.nexhire.entity.TrainingBlock>> getTrainingBlocks() {
         return ResponseEntity.ok(trainingBlockRepository.findAll());
+    }
+
+    @PostMapping("/blocks")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<com.nexhire.entity.TrainingBlock> createTrainingBlock(
+            @RequestBody Map<String, Object> body) {
+        String name = (String) body.get("name");
+        Long locationId = Long.valueOf(body.get("locationId").toString());
+        Integer capacity = body.containsKey("capacity") ? Integer.valueOf(body.get("capacity").toString()) : 60;
+
+        com.nexhire.entity.Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new com.nexhire.exception.ResourceNotFoundException("Location not found"));
+
+        com.nexhire.entity.TrainingBlock block = com.nexhire.entity.TrainingBlock.builder()
+                .name(name)
+                .location(location)
+                .capacity(capacity)
+                .occupiedSeats(0)
+                .build();
+
+        return ResponseEntity.ok(trainingBlockRepository.save(block));
     }
 
     /** HR: list all trainees. */

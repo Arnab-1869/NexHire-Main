@@ -47,6 +47,7 @@ import { BranchesComponent } from './modules/admin/locations/branches/branches.c
 import { BlocksComponent } from './modules/admin/locations/blocks/blocks.component';
 import { BudgetsComponent } from './modules/admin/budgets/budgets.component';
 import { SystemSettingsComponent } from './modules/admin/system-settings/system-settings.component';
+import { RolesComponent } from './modules/admin/roles/roles.component';
 
 // ─── Error Pages ─────────────────────────────────────────────────────────────
 import { UnauthorizedComponent } from './modules/errors/unauthorized.component';
@@ -186,6 +187,18 @@ const routes: Routes = [
         component: UserManagementComponent,
         canActivate: [PermissionGuard],
         data: { permissions: ['MANAGE_ROLES'] },
+      },
+      {
+        path: 'roles',
+        component: RolesComponent,
+        canActivate: [PermissionGuard],
+        data: { permissions: ['MANAGE_ROLES'] },
+      },
+      {
+        path: 'role-permissions',
+        component: RolesComponent,
+        canActivate: [PermissionGuard],
+        data: { permissions: ['MANAGE_PERMISSIONS'] },
       },
       {
         path: 'cities',

@@ -41,4 +41,7 @@ public class JoiningLetter {
     private LocalDateTime sentAt;
 
     private LocalDateTime respondedAt;
+
+    @Column(name = "batch_id")
+    private Long batchId;
 }

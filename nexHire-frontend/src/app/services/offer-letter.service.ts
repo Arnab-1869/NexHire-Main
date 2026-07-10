@@ -43,13 +43,8 @@ export class OfferLetterService extends BaseService {
     return `${API_ENDPOINTS.OFFERS.SEND(id)}/pdf`;
   }
 
-  /**
-   * Compat for the legacy HR offer-letters list page. The backend has no
-   * "all offers" endpoint (HR drives offers from the applications workflow),
-   * so this returns an empty list.
-   */
   getAll(): Observable<OfferLetter[]> {
-    return of([]);
+    return this.http.get<OfferLetter[]>(API_ENDPOINTS.OFFERS.BASE);
   }
 
   /**

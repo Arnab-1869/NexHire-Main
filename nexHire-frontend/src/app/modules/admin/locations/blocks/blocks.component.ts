@@ -1,41 +1,40 @@
 import { Component, OnInit } from '@angular/core';
-import { TrainingService } from '../../../../services/training.service';
+import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { Block, Branch, CreateBlockRequest } from '../../../../models/location.model';
 
 @Component({
     selector: 'app-blocks',
     template: `
     <div class="locations-page">
-      <app-page-header title="Blocks" subtitle="Manage training blocks and capacity."></app-page-header>
+      <app-page-header title="Training Blocks" subtitle="Manage classroom blocks and occupancy."></app-page-header>
 
       <div class="locations-grid">
         <mat-card class="panel-card form-panel">
           <mat-card-header>
             <mat-card-title>Add New Block</mat-card-title>
           </mat-card-header>
-          <mat-card-content>
+          <mat-card-content style="display: flex; flex-direction: column; gap: 16px; padding-top: 16px;">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Block Name</mat-label>
-              <input matInput [(ngModel)]="newBlock.blockName" placeholder="Block name" />
+              <input matInput [(ngModel)]="newBlock.name" placeholder="Block name" />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Branch</mat-label>
-              <mat-select [(value)]="newBlock.branchId">
-                <mat-option *ngFor="let branch of branches" [value]="branch.branchId">{{ branch.branchName }} ({{ branch.cityName }})</mat-option>
+              <mat-label>Branch Location</mat-label>
+              <mat-select [(value)]="newBlock.locationId">
+                <mat-option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }} ({{ branch.city }})</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Total Capacity</mat-label>
-              <input matInput type="number" [(ngModel)]="newBlock.totalCapacity" placeholder="Total capacity" />
+              <mat-label>Total Seat Capacity</mat-label>
+              <input matInput type="number" [(ngModel)]="newBlock.capacity" placeholder="Total capacity" />
             </mat-form-field>
-            <button mat-raised-button color="primary" (click)="addBlock()">Add Block</button>
+            <button mat-raised-button color="primary" [disabled]="loading" (click)="addBlock()">Create Block</button>
           </mat-card-content>
         </mat-card>
 
         <mat-card class="panel-card table-panel">
           <mat-card-header>
-            <mat-card-title>Existing Blocks</mat-card-title>
+            <mat-card-title>Configured Blocks</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <app-empty-state *ngIf="blocks.length === 0" icon="location_on" title="No blocks configured" subtitle="Add training blocks to support batch allocation."></app-empty-state>
@@ -43,19 +42,19 @@ import { Block, Branch, CreateBlockRequest } from '../../../../models/location.m
               <table mat-table [dataSource]="blocks">
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Block</th>
-                  <td mat-cell *matCellDef="let block">{{ block.blockName }}</td>
+                  <td mat-cell *matCellDef="let block">{{ block.name }}</td>
                 </ng-container>
                 <ng-container matColumnDef="branch">
-                  <th mat-header-cell *matHeaderCellDef>Branch</th>
-                  <td mat-cell *matCellDef="let block">{{ block.branchName }}</td>
+                  <th mat-header-cell *matHeaderCellDef>Branch Location</th>
+                  <td mat-cell *matCellDef="let block">{{ block.location?.name || 'N/A' }}</td>
                 </ng-container>
                 <ng-container matColumnDef="capacity">
                   <th mat-header-cell *matHeaderCellDef>Capacity</th>
-                  <td mat-cell *matCellDef="let block">{{ block.totalCapacity }}</td>
+                  <td mat-cell *matCellDef="let block">{{ block.capacity }}</td>
                 </ng-container>
                 <ng-container matColumnDef="vacancy">
-                  <th mat-header-cell *matHeaderCellDef>Vacancy</th>
-                  <td mat-cell *matCellDef="let block">{{ block.availableVacancy }}</td>
+                  <th mat-header-cell *matHeaderCellDef>Occupied Seats</th>
+                  <td mat-cell *matCellDef="let block">{{ block.occupiedSeats }}</td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -66,54 +65,29 @@ import { Block, Branch, CreateBlockRequest } from '../../../../models/location.m
       </div>
     </div>
   `,
-    styles: [`
-    .locations-page {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-    .locations-grid {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 24px;
-    }
-    @media (max-width: 992px) {
-      .locations-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .panel-card {
-      border-radius: 12px !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
-      padding: 16px;
-    }
-    .full-width {
-      width: 100%;
-    }
-    .table-container {
-      margin-top: 16px;
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-    }
+  styles: [`
+    .locations-page { display: flex; flex-direction: column; gap: 24px; }
+    .locations-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+    @media (max-width: 992px) { .locations-grid { grid-template-columns: 1fr; } }
+    .panel-card { border-radius: 12px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important; padding: 16px; }
+    .full-width { width: 100%; }
+    .table-container { margin-top: 16px; overflow-x: auto; }
+    table { width: 100%; }
   `],
-    standalone: false
+  standalone: false
 })
 export class BlocksComponent implements OnInit {
-  blocks: Block[] = [];
-  branches: Branch[] = [];
+  blocks: any[] = [];
+  branches: any[] = [];
   displayedColumns = ['name', 'branch', 'capacity', 'vacancy'];
-  newBlock: Partial<CreateBlockRequest> = {
-    blockName: '',
-    branchId: 0,
-    totalCapacity: 0
+  newBlock = {
+    name: '',
+    locationId: 0,
+    capacity: 60
   };
+  loading = false;
 
-  constructor(
-    private trainingService: TrainingService,
-    private toastService: ToastService
-  ) {}
+  constructor(private http: HttpClient, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadBranches();
@@ -121,25 +95,36 @@ export class BlocksComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.trainingService.getBranches().subscribe(list => this.branches = list || []);
+    this.http.get<any[]>('/api/locations').subscribe({
+      next: list => this.branches = list || [],
+      error: () => this.toastService.error('Failed to load branches.')
+    });
   }
 
   loadBlocks(): void {
-    this.trainingService.getBlocks().subscribe(list => this.blocks = list || []);
+    this.http.get<any[]>('/api/training/blocks').subscribe({
+      next: list => this.blocks = list || [],
+      error: () => this.toastService.error('Failed to load training blocks.')
+    });
   }
 
   addBlock(): void {
-    if (!this.newBlock.blockName?.trim() || !this.newBlock.branchId || !this.newBlock.totalCapacity) {
+    if (!this.newBlock.name.trim() || !this.newBlock.locationId || !this.newBlock.capacity) {
       this.toastService.error('Block name, branch, and capacity are required.');
       return;
     }
-    this.trainingService.createBlock(this.newBlock as CreateBlockRequest).subscribe({
+    this.loading = true;
+    this.http.post<any>('/api/training/blocks', this.newBlock).subscribe({
       next: block => {
-        this.toastService.success('Block added successfully.');
+        this.toastService.success('Block created successfully.');
         this.blocks = [block, ...this.blocks];
-        this.newBlock = { blockName: '', branchId: 0, totalCapacity: 0 };
+        this.newBlock = { name: '', locationId: 0, capacity: 60 };
+        this.loading = false;
       },
-      error: () => this.toastService.error('Failed to add block.')
+      error: () => {
+        this.toastService.error('Failed to create block.');
+        this.loading = false;
+      }
     });
   }
 }

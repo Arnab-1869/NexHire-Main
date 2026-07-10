@@ -19,46 +19,110 @@ import { BaseService } from './base.service';
 const MOCK_SELECTED: SelectedCandidate[] = [
   { selectedId: 1, employeeId: 101, candidateName: 'Rahul Singh', candidateEmail: 'rahul@nexhire.com', jobTitle: 'Java Backend Developer', trainingDomain: 'JAVA', status: 'SELECTED' },
   { selectedId: 2, employeeId: 102, candidateName: 'Priya Sharma', candidateEmail: 'priya@nexhire.com', jobTitle: 'Java Backend Developer', trainingDomain: 'JAVA', status: 'TRAINING_PENDING' },
+  { selectedId: 3, employeeId: 103, candidateName: 'Amit Sharma', candidateEmail: 'amit@example.com', jobTitle: 'Angular UI Developer', trainingDomain: 'ANGULAR', status: 'TRAINING_PENDING' },
+  { selectedId: 4, employeeId: 104, candidateName: 'Kunal Sen', candidateEmail: 'kunal@example.com', jobTitle: 'Python Data Analyst', trainingDomain: 'PYTHON', status: 'SELECTED' },
+  { selectedId: 5, employeeId: 105, candidateName: 'Aditi Rao', candidateEmail: 'aditi@example.com', jobTitle: 'QA Engineer', trainingDomain: 'TESTING', status: 'TRAINING_PENDING' }
 ];
 
 const MOCK_CITIES: City[] = [
   { cityId: 1, cityName: 'Bangalore', state: 'Karnataka', country: 'India', totalBudget: 5000000, usedBudget: 1500000, availableBudget: 3500000, active: true },
   { cityId: 2, cityName: 'Mumbai', state: 'Maharashtra', country: 'India', totalBudget: 4000000, usedBudget: 1000000, availableBudget: 3000000, active: true },
+  { cityId: 3, cityName: 'Hyderabad', state: 'Telangana', country: 'India', totalBudget: 3000000, usedBudget: 500000, availableBudget: 2500000, active: true }
 ];
 
 const MOCK_BRANCHES: Branch[] = [
   { branchId: 1, branchName: 'BTM Branch', cityId: 1, active: true },
-  { branchId: 2, branchName: 'Andheri Branch', cityId: 2, active: true },
+  { branchId: 2, branchName: 'Whitefield Branch', cityId: 1, active: true },
+  { branchId: 3, branchName: 'Andheri Branch', cityId: 2, active: true },
+  { branchId: 4, branchName: 'Gachibowli Branch', cityId: 3, active: true }
 ];
 
 const MOCK_BLOCKS: Block[] = [
   { blockId: 1, blockName: 'Block A', branchId: 1, totalCapacity: 20, usedCapacity: 5, availableVacancy: 15, active: true },
-  { blockId: 2, blockName: 'Block B', branchId: 2, totalCapacity: 15, usedCapacity: 3, availableVacancy: 12, active: true },
+  { blockId: 2, blockName: 'Block B', branchId: 2, totalCapacity: 30, usedCapacity: 12, availableVacancy: 18, active: true },
+  { blockId: 3, blockName: 'Block C', branchId: 3, totalCapacity: 15, usedCapacity: 3, availableVacancy: 12, active: true },
+  { blockId: 4, blockName: 'Block D', branchId: 4, totalCapacity: 25, usedCapacity: 8, availableVacancy: 17, active: true }
 ];
 
 const MOCK_TRAININGS: Training[] = [
   { trainingId: 1, trainingName: 'Java Enterprise Training', domain: 'JAVA', costPerCandidate: 50000, active: true },
   { trainingId: 2, trainingName: 'Angular UI Training', domain: 'ANGULAR', costPerCandidate: 40000, active: true },
+  { trainingId: 3, trainingName: 'Python Data Science Training', domain: 'PYTHON', costPerCandidate: 45000, active: true },
+  { trainingId: 4, trainingName: 'Test Automation Fundamentals', domain: 'TESTING', costPerCandidate: 30000, active: true }
 ];
 
 const MOCK_TRAINEES: Trainee[] = [
   {
     traineeId: 1,
-    employeeId: 101,
+    employeeId: 102,
     selectedId: 2,
-    trainingId: 2,
+    trainingId: 1,
     cityId: 1,
     branchId: 1,
     blockId: 1,
     candidateName: 'Priya Sharma',
     candidateEmail: 'priya@nexhire.com',
-    trainingName: 'Angular UI Training',
-    trainingDomain: 'ANGULAR',
+    trainingName: 'Java Enterprise Training',
+    trainingDomain: 'JAVA',
     cityName: 'Bangalore',
     branchName: 'BTM Branch',
     blockName: 'Block A',
     status: 'IN_PROGRESS',
     progressPercentage: 65,
+  },
+  {
+    traineeId: 2,
+    employeeId: 103,
+    selectedId: 3,
+    trainingId: 2,
+    cityId: 1,
+    branchId: 2,
+    blockId: 2,
+    candidateName: 'Amit Sharma',
+    candidateEmail: 'amit@example.com',
+    trainingName: 'Angular UI Training',
+    trainingDomain: 'ANGULAR',
+    cityName: 'Bangalore',
+    branchName: 'Whitefield Branch',
+    blockName: 'Block B',
+    status: 'IN_PROGRESS',
+    progressPercentage: 45,
+  },
+  {
+    traineeId: 3,
+    employeeId: 104,
+    selectedId: 4,
+    trainingId: 3,
+    cityId: 2,
+    branchId: 3,
+    blockId: 3,
+    candidateName: 'Kunal Sen',
+    candidateEmail: 'kunal@example.com',
+    trainingName: 'Python Data Science Training',
+    trainingDomain: 'PYTHON',
+    cityName: 'Mumbai',
+    branchName: 'Andheri Branch',
+    blockName: 'Block C',
+    status: 'COMPLETED',
+    progressPercentage: 100,
+  },
+  {
+    traineeId: 4,
+    employeeId: 105,
+    selectedId: 5,
+    trainingId: 4,
+    cityId: 3,
+    branchId: 4,
+    blockId: 4,
+    candidateName: 'Aditi Rao',
+    candidateEmail: 'aditi@example.com',
+    trainingName: 'Test Automation Fundamentals',
+    trainingDomain: 'TESTING',
+    cityName: 'Hyderabad',
+    branchName: 'Gachibowli Branch',
+    blockName: 'Block D',
+    status: 'TRAINING_ASSIGNED',
+    progressPercentage: 0,
   }
 ];
 

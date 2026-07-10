@@ -522,9 +522,112 @@ export class InMemoryDataStore {
     }
   }
 
-  private seedApplications(): void { }
-  private seedAssessments(): void { }
-  private seedOffers(): void { }
+  private seedApplications(): void {
+    const candidates = [
+      { name: 'Rohan Sharma', email: 'rohan@example.com', phone: '9876540001', status: 'APPLIED' as ApplicationStatus },
+      { name: 'Sneha Patel', email: 'sneha@example.com', phone: '9876540002', status: 'SHORTLISTED' as ApplicationStatus },
+      { name: 'Aarav Mehta', email: 'aarav@example.com', phone: '9876540003', status: 'SHORTLISTED' as ApplicationStatus },
+      { name: 'Aditi Rao', email: 'aditi@example.com', phone: '9876540004', status: 'SHORTLISTED' as ApplicationStatus },
+      { name: 'Priya Singh', email: 'priya@example.com', phone: '9876540005', status: 'ASSESSMENT_PENDING' as ApplicationStatus },
+      { name: 'Amit Sharma', email: 'amit@example.com', phone: '9876540006', status: 'ASSESSMENT_COMPLETED' as ApplicationStatus },
+      { name: 'Rahul Singh', email: 'rahul@example.com', phone: '9876540007', status: 'QUALIFIED' as ApplicationStatus },
+      { name: 'Kunal Sen', email: 'kunal@example.com', phone: '9876540008', status: 'QUALIFIED' as ApplicationStatus },
+      { name: 'Pooja Hegde', email: 'pooja@example.com', phone: '9876540009', status: 'OFFER_SENT' as ApplicationStatus },
+      { name: 'Vikram Reddy', email: 'vikram@example.com', phone: '9876540010', status: 'OFFER_ACCEPTED' as ApplicationStatus },
+      { name: 'Neha Kakkar', email: 'neha@example.com', phone: '9876540011', status: 'JOINING_ON_HOLD' as ApplicationStatus },
+      { name: 'Ravi Teja', email: 'ravi.teja@example.com', phone: '9876540012', status: 'REJECTED' as ApplicationStatus },
+      { name: 'Siddharth Roy', email: 'sid@example.com', phone: '9876540013', status: 'TRAINING_IN_PROGRESS' as ApplicationStatus }
+    ];
+
+    candidates.forEach((c, index) => {
+      const jobId = (index % 5) + 1;
+      const job = this.jobs.get(jobId);
+      this.create<Application>(EntityType.APPLICATIONS, {
+        userId: 200 + index,
+        jobId: jobId,
+        userFullName: c.name,
+        userEmail: c.email,
+        userPhone: c.phone,
+        jobTitle: job?.jobTitle || `Software Engineer - Java (${jobId})`,
+        jobLocation: job?.location || 'Bangalore',
+        status: c.status,
+        appliedDate: new Date(Date.now() - (index + 2) * 24 * 3600 * 1000).toISOString().split('T')[0],
+        remarks: 'Resume screened. Good background.'
+      });
+    });
+  }
+
+  private seedAssessments(): void {
+    const apps = this.getAll<Application>(EntityType.APPLICATIONS);
+    apps.forEach((app) => {
+      if (['ASSESSMENT_PENDING', 'ASSESSMENT_COMPLETED', 'QUALIFIED', 'OFFER_SENT', 'OFFER_ACCEPTED'].includes(app.status)) {
+        let testStatus: AssessmentStatus = 'PASSED';
+        let score = 85;
+        if (app.status === 'ASSESSMENT_PENDING') {
+          testStatus = 'ASSIGNED';
+          score = 0;
+        } else if (app.status === 'ASSESSMENT_COMPLETED') {
+          testStatus = 'SUBMITTED';
+          score = 75;
+        }
+        
+        const test = this.create<Assessment>(EntityType.ASSESSMENTS, {
+          applicationId: app.applicationId,
+          userId: app.userId,
+          jobId: app.jobId,
+          candidateName: app.userFullName,
+          candidateEmail: app.userEmail,
+          jobTitle: app.jobTitle,
+          assessmentType: 'JAVA',
+          assessmentDate: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString().split('T')[0],
+          status: testStatus,
+          score: score,
+          maxScore: 100,
+          remarks: score >= 70 ? 'Excellent performance.' : 'Average performance.'
+        });
+
+        this.update<Application>(EntityType.APPLICATIONS, app.applicationId, {
+          assessmentId: test.assessmentId,
+          assessmentStatus: test.status
+        });
+      }
+    });
+  }
+
+  private seedOffers(): void {
+    const apps = this.getAll<Application>(EntityType.APPLICATIONS);
+    apps.forEach((app) => {
+      if (['OFFER_SENT', 'OFFER_ACCEPTED', 'JOINING_ON_HOLD', 'TRAINING_IN_PROGRESS'].includes(app.status)) {
+        let offerStatus: OfferStatus = 'SENT';
+        if (app.status === 'OFFER_ACCEPTED' || app.status === 'TRAINING_IN_PROGRESS') {
+          offerStatus = 'ACCEPTED';
+        } else if (app.status === 'JOINING_ON_HOLD') {
+          offerStatus = 'SENT';
+        }
+        
+        const offer = this.create<OfferLetter>(EntityType.OFFERS, {
+          assessmentId: app.assessmentId || 1,
+          applicationId: app.applicationId,
+          userId: app.userId,
+          candidateName: app.userFullName,
+          candidateEmail: app.userEmail,
+          jobTitle: app.jobTitle,
+          designation: 'Software Associate',
+          ctc: 850000,
+          joiningDate: new Date(Date.now() + 20 * 24 * 3600 * 1000).toISOString().split('T')[0],
+          status: offerStatus,
+          issuedDate: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString().split('T')[0],
+          expiryDate: new Date(Date.now() + 10 * 24 * 3600 * 1000).toISOString().split('T')[0],
+          remarks: 'Standard corporate offer letter issued.'
+        });
+
+        this.update<Application>(EntityType.APPLICATIONS, app.applicationId, {
+          offerId: offer.offerId,
+          offerStatus: offer.status
+        });
+      }
+    });
+  }
   private seedEmployees(): void { }
   private seedSelectedCandidates(): void { }
   private seedTrainees(): void { }

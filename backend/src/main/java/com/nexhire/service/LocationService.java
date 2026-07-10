@@ -1,5 +1,6 @@
 package com.nexhire.service;
 
+import com.nexhire.dto.LocationCreateRequest;
 import com.nexhire.dto.LocationResponse;
 import com.nexhire.dto.LocationUpdateRequest;
 import com.nexhire.entity.HiringBudget;
@@ -76,5 +77,32 @@ public class LocationService {
                 .usedAmount(budget != null ? budget.getUsedAmount() : 0L)
                 .remainingAmount(budget != null ? budget.getBudgetAmount() - budget.getUsedAmount() : 0L)
                 .build();
+    }
+
+    @Transactional
+    public LocationResponse createLocation(LocationCreateRequest request) {
+        Location location = Location.builder()
+                .name(request.getName())
+                .city(request.getCity())
+                .build();
+        location = locationRepository.save(location);
+
+        HiringBudget budget = HiringBudget.builder()
+                .location(location)
+                .totalSlots(request.getBudgetTotalSlots() != null ? request.getBudgetTotalSlots() : 60)
+                .usedSlots(0)
+                .budgetAmount(request.getBudgetAmount() != null ? request.getBudgetAmount() : 5000000L)
+                .usedAmount(0L)
+                .build();
+        hiringBudgetRepository.save(budget);
+
+        TrainingSeat seats = TrainingSeat.builder()
+                .location(location)
+                .totalSeats(request.getSeatsTotalSeats() != null ? request.getSeatsTotalSeats() : 60)
+                .occupiedSeats(0)
+                .build();
+        trainingSeatRepository.save(seats);
+
+        return toResponse(location);
     }
 }

@@ -11,7 +11,16 @@ import { BaseService } from './base.service';
 const MOCK_ASSETS: Asset[] = [
   { assetId: 1, assetName: 'Dell Latitude 5520', assetType: 'LAPTOP', assetTag: 'ASSET-001', serialNumber: 'SN123456', brand: 'Dell', status: 'AVAILABLE', purchaseDate: '2025-01-15' },
   { assetId: 2, assetName: 'Logitech MX Master 3', assetType: 'MOUSE', assetTag: 'ASSET-002', brand: 'Logitech', status: 'AVAILABLE' },
-  { assetId: 3, assetName: 'HP EliteBook 840', assetType: 'LAPTOP', assetTag: 'ASSET-003', serialNumber: 'SN789012', brand: 'HP', status: 'ASSIGNED', currentTraineeId: 1, currentTraineeName: 'Rahul Singh' },
+  { assetId: 3, assetName: 'HP EliteBook 840', assetType: 'LAPTOP', assetTag: 'ASSET-003', serialNumber: 'SN789012', brand: 'HP', status: 'ASSIGNED', currentTraineeId: 1, currentTraineeName: 'Priya Sharma' },
+  { assetId: 4, assetName: 'MacBook Pro 14"', assetType: 'LAPTOP', assetTag: 'ASSET-004', serialNumber: 'SN889013', brand: 'Apple', status: 'ASSIGNED', currentTraineeId: 2, currentTraineeName: 'Amit Sharma' },
+  { assetId: 5, assetName: 'Lenovo ThinkPad L14', assetType: 'LAPTOP', assetTag: 'ASSET-005', serialNumber: 'SN991024', brand: 'Lenovo', status: 'AVAILABLE' },
+  { assetId: 6, assetName: 'Dell 24" Monitor U2422H', assetType: 'MONITOR', assetTag: 'ASSET-006', serialNumber: 'SN441098', brand: 'Dell', status: 'AVAILABLE' },
+  { assetId: 7, assetName: 'Jabra Evolve2 65 Headset', assetType: 'HEADSET', assetTag: 'ASSET-007', serialNumber: 'SN332014', brand: 'Jabra', status: 'ASSIGNED', currentTraineeId: 1, currentTraineeName: 'Priya Sharma' },
+  { assetId: 8, assetName: 'Logitech K120 Keyboard', assetType: 'KEYBOARD', assetTag: 'ASSET-008', brand: 'Logitech', status: 'AVAILABLE' },
+  { assetId: 9, assetName: 'Samsung Galaxy A34', assetType: 'MOBILE', assetTag: 'ASSET-009', serialNumber: 'SN551239', brand: 'Samsung', status: 'AVAILABLE' },
+  { assetId: 10, assetName: 'NexHire Corporate ID Card', assetType: 'ID_CARD', assetTag: 'ASSET-010', brand: 'NexHire', status: 'ASSIGNED', currentTraineeId: 3, currentTraineeName: 'Kunal Sen' },
+  { assetId: 11, assetName: 'Logitech MX Keys', assetType: 'KEYBOARD', assetTag: 'ASSET-011', brand: 'Logitech', status: 'AVAILABLE' },
+  { assetId: 12, assetName: 'Dell Wireless Mouse WM126', assetType: 'MOUSE', assetTag: 'ASSET-012', brand: 'Dell', status: 'AVAILABLE' }
 ];
 
 @Injectable({ providedIn: 'root' })

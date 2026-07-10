@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateUserDialogComponent } from './create-user-dialog.component';
 import {
   AdminUserService,
   AdminUser,
@@ -9,10 +11,15 @@ import { ToastService } from '../../../shared/services/toast.service';
   selector: 'app-user-management',
   template: `
     <div class="user-management-container">
-      <app-page-header
-        title="User Management"
-        subtitle="Manage system users, update roles, and deactivate accounts."
-      ></app-page-header>
+      <div class="header-row">
+        <app-page-header
+          title="User Management"
+          subtitle="Manage system users, activate or restrict accounts."
+        ></app-page-header>
+        <button mat-raised-button color="primary" class="create-btn" (click)="openCreateUserDialog()">
+          <mat-icon>add</mat-icon> Create New User
+        </button>
+      </div>
 
       <mat-card class="table-card">
         <mat-card-content>
@@ -38,28 +45,9 @@ import { ToastService } from '../../../shared/services/toast.service';
               <ng-container matColumnDef="role">
                 <th mat-header-cell *matHeaderCellDef>Role</th>
                 <td mat-cell *matCellDef="let u">
-                  <button
-                    mat-button
-                    [matMenuTriggerFor]="roleMenu"
-                    [ngClass]="getRoleClass(u.role)"
-                    class="role-btn"
-                  >
-                    {{ u.role }} <mat-icon>arrow_drop_down</mat-icon>
-                  </button>
-                  <mat-menu #roleMenu="matMenu">
-                    <button mat-menu-item (click)="changeRole(u, 'EMPLOYEE')">
-                      Employee
-                    </button>
-                    <button mat-menu-item (click)="changeRole(u, 'HR')">
-                      HR
-                    </button>
-                    <button mat-menu-item (click)="changeRole(u, 'RMG')">
-                      RMG
-                    </button>
-                    <button mat-menu-item (click)="changeRole(u, 'ADMIN')">
-                      Admin
-                    </button>
-                  </mat-menu>
+                  <span [ngClass]="getRoleClass(u.role)" class="role-badge-text">
+                    {{ u.role }}
+                  </span>
                 </td>
               </ng-container>
 
@@ -71,7 +59,7 @@ import { ToastService } from '../../../shared/services/toast.service';
                     [class.active]="u.active"
                     [class.restricted]="!u.active"
                   >
-                    {{ u.active ? 'Active' : 'Deactivated' }}
+                    {{ u.active ? 'Active' : 'Restricted' }}
                   </span>
                 </td>
               </ng-container>
@@ -80,12 +68,20 @@ import { ToastService } from '../../../shared/services/toast.service';
                 <th mat-header-cell *matHeaderCellDef align="end">Actions</th>
                 <td mat-cell *matCellDef="let u" align="end">
                   <button
+                    *ngIf="u.active"
                     mat-stroked-button
                     color="warn"
                     (click)="deactivate(u)"
-                    [disabled]="!u.active"
                   >
-                    Deactivate
+                    Restrict
+                  </button>
+                  <button
+                    *ngIf="!u.active"
+                    mat-raised-button
+                    color="primary"
+                    (click)="activate(u)"
+                  >
+                    Activate
                   </button>
                 </td>
               </ng-container>
@@ -110,6 +106,15 @@ import { ToastService } from '../../../shared/services/toast.service';
         display: flex;
         flex-direction: column;
         gap: 24px;
+      }
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .create-btn {
+        height: 40px;
+        font-weight: 600;
       }
       .table-card {
         border-radius: 12px !important;
@@ -149,12 +154,12 @@ import { ToastService } from '../../../shared/services/toast.service';
         background: #fee2e2;
         color: #dc2626;
       }
-      .role-btn {
-        border-radius: 20px !important;
-        font-size: 12px !important;
-        height: 32px !important;
-        line-height: 32px !important;
-        padding: 0 8px 0 16px !important;
+      .role-badge-text {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
       }
       .role-admin {
         background-color: #f3e8ff !important;
@@ -189,6 +194,7 @@ export class UserManagementComponent implements OnInit {
   constructor(
     private adminUserService: AdminUserService,
     private toast: ToastService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -214,26 +220,48 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  changeRole(user: AdminUser, newRole: string): void {
-    if (user.role === newRole) return;
-    this.adminUserService.updateRole(user.id, newRole).subscribe({
-      next: (updated) => {
-        user.role = updated.role;
-        this.toast.success(`Role updated to ${updated.role}`);
-      },
-      error: (e) =>
-        this.toast.error(e.error?.message || 'Failed to update role'),
-    });
-  }
-
   deactivate(user: AdminUser): void {
     this.adminUserService.deactivate(user.id).subscribe({
       next: () => {
         user.active = false;
-        this.toast.success('User deactivated');
+        this.toast.success('User restricted successfully.');
       },
       error: (e) =>
-        this.toast.error(e.error?.message || 'Failed to deactivate user'),
+        this.toast.error(e.error?.message || 'Failed to restrict user'),
+    });
+  }
+
+  activate(user: AdminUser): void {
+    this.adminUserService.activate(user.id).subscribe({
+      next: () => {
+        user.active = true;
+        this.toast.success('User activated successfully.');
+      },
+      error: (e) =>
+        this.toast.error(e.error?.message || 'Failed to activate user'),
+    });
+  }
+
+  openCreateUserDialog(): void {
+    const dialogRef = this.dialog.open(CreateUserDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const payload = {
+          name: result.fullName,
+          email: result.email,
+          password: result.password,
+          role: result.role,
+          phone: '9999999999',
+        };
+        this.adminUserService.createUser(payload).subscribe({
+          next: () => {
+            this.toast.success('User credentials created successfully.');
+            this.load();
+          },
+          error: (e) =>
+            this.toast.error(e.error?.message || 'Failed to create user.'),
+        });
+      }
     });
   }
 }

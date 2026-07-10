@@ -32,6 +32,8 @@ public class JoiningBatchService {
     private final JobApplicationRepository applicationRepository;
     private final JoiningLetterRepository joiningLetterRepository;
     private final NotificationService notificationService;
+    private final HiringBudgetRepository hiringBudgetRepository;
+    private final TrainingSeatRepository trainingSeatRepository;
 
     public List<JoiningBatchResponse> getAllBatches() {
         return batchRepository.findAll().stream().map(this::toResponse).toList();
@@ -180,6 +182,38 @@ public class JoiningBatchService {
                 .orElseThrow(() -> new ResourceNotFoundException("HR user not found"));
 
         List<JoiningBatchCandidate> candidates = batchCandidateRepository.findByBatchId(batchId);
+
+        // Count how many letters we are actually sending
+        long lettersToSendCount = candidates.stream()
+                .filter(c -> c.getStatus().equalsIgnoreCase("ASSIGNED"))
+                .count();
+
+        if (lettersToSendCount > 0) {
+            Location location = batch.getJoiningLocation();
+            HiringBudget budget = hiringBudgetRepository.findByLocationId(location.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Hiring budget not found for location: " + location.getName()));
+
+            TrainingSeat seats = trainingSeatRepository.findByLocationId(location.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Training seats not found for location: " + location.getName()));
+
+            int availableBudget = budget.getTotalSlots() - budget.getUsedSlots();
+            int availableSeats = seats.getTotalSeats() - seats.getOccupiedSeats();
+
+            if (availableBudget < lettersToSendCount || availableSeats < lettersToSendCount) {
+                throw new InvalidStateTransitionException("Insufficient budget slots or training seats for location: " + location.getName());
+            }
+
+            double programCostPerCandidate = batch.getTraining().getCostPerCandidate() != null ? batch.getTraining().getCostPerCandidate() : 0.0;
+
+            // Deduct slots and monetary budget atomically
+            budget.setUsedSlots(budget.getUsedSlots() + (int) lettersToSendCount);
+            budget.setUsedAmount(budget.getUsedAmount() + (long) (programCostPerCandidate * lettersToSendCount));
+            hiringBudgetRepository.save(budget);
+
+            // Deduct seats
+            seats.setOccupiedSeats(seats.getOccupiedSeats() + (int) lettersToSendCount);
+            trainingSeatRepository.save(seats);
+        }
 
         for (JoiningBatchCandidate cand : candidates) {
             if (!cand.getStatus().equalsIgnoreCase("ASSIGNED")) {

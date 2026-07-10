@@ -23,90 +23,38 @@ import { environment } from '../../environments/environment';
 import { BaseService } from './base.service';
 
 const MOCK_SELECTED: SelectedCandidate[] = [
-  {
-    selectedId: 1,
-    employeeId: 101,
-    candidateName: 'Rahul Singh',
-    candidateEmail: 'rahul@nexhire.com',
-    jobTitle: 'Java Backend Developer',
-    trainingDomain: 'JAVA',
-    status: 'SELECTED',
-  },
-  {
-    selectedId: 2,
-    employeeId: 102,
-    candidateName: 'Priya Sharma',
-    candidateEmail: 'priya@nexhire.com',
-    jobTitle: 'Java Backend Developer',
-    trainingDomain: 'JAVA',
-    status: 'TRAINING_PENDING',
-  },
+  { selectedId: 1, employeeId: 101, candidateName: 'Rahul Singh', candidateEmail: 'rahul@nexhire.com', jobTitle: 'Java Backend Developer', trainingDomain: 'JAVA', status: 'SELECTED' },
+  { selectedId: 2, employeeId: 102, candidateName: 'Priya Sharma', candidateEmail: 'priya@nexhire.com', jobTitle: 'Java Backend Developer', trainingDomain: 'JAVA', status: 'TRAINING_PENDING' },
+  { selectedId: 3, employeeId: 103, candidateName: 'Amit Sharma', candidateEmail: 'amit@example.com', jobTitle: 'Angular UI Developer', trainingDomain: 'ANGULAR', status: 'TRAINING_PENDING' },
+  { selectedId: 4, employeeId: 104, candidateName: 'Kunal Sen', candidateEmail: 'kunal@example.com', jobTitle: 'Python Data Analyst', trainingDomain: 'PYTHON', status: 'SELECTED' },
+  { selectedId: 5, employeeId: 105, candidateName: 'Aditi Rao', candidateEmail: 'aditi@example.com', jobTitle: 'QA Engineer', trainingDomain: 'TESTING', status: 'TRAINING_PENDING' }
 ];
 
 const MOCK_CITIES: City[] = [
-  {
-    cityId: 1,
-    cityName: 'Bangalore',
-    state: 'Karnataka',
-    country: 'India',
-    totalBudget: 5000000,
-    usedBudget: 1500000,
-    availableBudget: 3500000,
-    active: true,
-  },
-  {
-    cityId: 2,
-    cityName: 'Mumbai',
-    state: 'Maharashtra',
-    country: 'India',
-    totalBudget: 4000000,
-    usedBudget: 1000000,
-    availableBudget: 3000000,
-    active: true,
-  },
+  { cityId: 1, cityName: 'Bangalore', state: 'Karnataka', country: 'India', totalBudget: 5000000, usedBudget: 1500000, availableBudget: 3500000, active: true },
+  { cityId: 2, cityName: 'Mumbai', state: 'Maharashtra', country: 'India', totalBudget: 4000000, usedBudget: 1000000, availableBudget: 3000000, active: true },
+  { cityId: 3, cityName: 'Hyderabad', state: 'Telangana', country: 'India', totalBudget: 3000000, usedBudget: 500000, availableBudget: 2500000, active: true }
 ];
 
 const MOCK_BRANCHES: Branch[] = [
   { branchId: 1, branchName: 'BTM Branch', cityId: 1, active: true },
-  { branchId: 2, branchName: 'Andheri Branch', cityId: 2, active: true },
+  { branchId: 2, branchName: 'Whitefield Branch', cityId: 1, active: true },
+  { branchId: 3, branchName: 'Andheri Branch', cityId: 2, active: true },
+  { branchId: 4, branchName: 'Gachibowli Branch', cityId: 3, active: true }
 ];
 
 const MOCK_BLOCKS: Block[] = [
-  {
-    blockId: 1,
-    blockName: 'Block A',
-    branchId: 1,
-    totalCapacity: 20,
-    usedCapacity: 5,
-    availableVacancy: 15,
-    active: true,
-  },
-  {
-    blockId: 2,
-    blockName: 'Block B',
-    branchId: 2,
-    totalCapacity: 15,
-    usedCapacity: 3,
-    availableVacancy: 12,
-    active: true,
-  },
+  { blockId: 1, blockName: 'Block A', branchId: 1, totalCapacity: 20, usedCapacity: 5, availableVacancy: 15, active: true },
+  { blockId: 2, blockName: 'Block B', branchId: 2, totalCapacity: 30, usedCapacity: 12, availableVacancy: 18, active: true },
+  { blockId: 3, blockName: 'Block C', branchId: 3, totalCapacity: 15, usedCapacity: 3, availableVacancy: 12, active: true },
+  { blockId: 4, blockName: 'Block D', branchId: 4, totalCapacity: 25, usedCapacity: 8, availableVacancy: 17, active: true }
 ];
 
 const MOCK_TRAININGS: Training[] = [
-  {
-    trainingId: 1,
-    trainingName: 'Java Enterprise Training',
-    domain: 'JAVA',
-    costPerCandidate: 50000,
-    active: true,
-  },
-  {
-    trainingId: 2,
-    trainingName: 'Angular UI Training',
-    domain: 'ANGULAR',
-    costPerCandidate: 40000,
-    active: true,
-  },
+  { trainingId: 1, trainingName: 'Java Enterprise Training', domain: 'JAVA', costPerCandidate: 50000, active: true },
+  { trainingId: 2, trainingName: 'Angular UI Training', domain: 'ANGULAR', costPerCandidate: 40000, active: true },
+  { trainingId: 3, trainingName: 'Python Data Science Training', domain: 'PYTHON', costPerCandidate: 45000, active: true },
+  { trainingId: 4, trainingName: 'Test Automation Fundamentals', domain: 'TESTING', costPerCandidate: 30000, active: true }
 ];
 
 @Injectable({ providedIn: 'root' })

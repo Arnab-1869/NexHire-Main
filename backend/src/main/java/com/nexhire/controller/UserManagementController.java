@@ -41,4 +41,20 @@ public class UserManagementController {
         Long adminId = (Long) authentication.getPrincipal();
         return ResponseEntity.ok(userManagementService.deactivate(id, adminId));
     }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<UserResponse> activate(
+            @PathVariable Long id,
+            Authentication authentication) {
+        Long adminId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(userManagementService.activate(id, adminId));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponse> createUser(
+            @Valid @RequestBody com.nexhire.dto.UserCreateRequest request,
+            Authentication authentication) {
+        Long adminId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(userManagementService.createUser(request, adminId));
+    }
 }

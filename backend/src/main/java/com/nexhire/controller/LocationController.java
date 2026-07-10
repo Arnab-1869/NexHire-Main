@@ -18,13 +18,20 @@ public class LocationController {
     private final LocationService locationService;
 
     @GetMapping
-    @PreAuthorize("hasRole('HR')")
+    @PreAuthorize("hasAnyRole('HR', 'ADMIN')")
     public ResponseEntity<List<LocationResponse>> getAllLocations() {
         return ResponseEntity.ok(locationService.getAllLocations());
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LocationResponse> createLocation(
+            @RequestBody com.nexhire.dto.LocationCreateRequest request) {
+        return ResponseEntity.ok(locationService.createLocation(request));
+    }
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('HR')")
+    @PreAuthorize("hasAnyRole('HR', 'ADMIN')")
     public ResponseEntity<LocationResponse> updateLocation(
             @PathVariable Long id,
             @RequestBody LocationUpdateRequest request) {

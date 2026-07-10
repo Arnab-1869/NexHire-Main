@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Application } from '../../models/application.model';
 import { Assessment, AssessmentStatus, AssessmentBulkResult } from '../../models/assessment.model';
+import { ExcelImportService } from '../../services/excel-import.service';
 
 @Component({
     selector: 'app-assessments-mgmt',
@@ -139,6 +140,43 @@ import { Assessment, AssessmentStatus, AssessmentBulkResult } from '../../models
         </mat-card>
       </div>
 
+      <!-- Bulk Upload Assessment Scores (Excel) -->
+      <mat-card class="column-card mt-24">
+        <mat-card-header>
+          <mat-card-title>Bulk Upload Assessment Scores</mat-card-title>
+        </mat-card-header>
+        <mat-card-content style="padding-top: 16px;">
+          <p class="section-desc" style="font-size: 14px; color: #475569; margin-bottom: 16px;">
+            Process scores for a mass assessment by uploading the results spreadsheet. You can also specify a custom pass cutoff mark below.
+          </p>
+          
+          <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+            <mat-form-field appearance="outline" style="max-width: 180px;">
+              <mat-label>Pass Cutoff Mark</mat-label>
+              <input matInput type="number" [(ngModel)]="cutoffMark" placeholder="Default: 70" />
+            </mat-form-field>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input type="file" #excelInput (change)="onExcelSelected($event)" accept=".xlsx,.xls" style="display: none;" />
+              <button mat-stroked-button color="primary" (click)="excelInput.click()">
+                <mat-icon>cloud_upload</mat-icon> Choose Assessment Excel
+              </button>
+              <span style="font-size: 13px; font-weight: 500;" *ngIf="excelFile">{{ excelFile.name }}</span>
+              <span style="color: #94a3b8; font-size: 13px;" *ngIf="!excelFile">No file chosen</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 12px;">
+            <button mat-raised-button color="primary" [disabled]="!excelFile || uploadingExcel" (click)="uploadExcelScores()">
+              Process Assessment Excel
+            </button>
+            <a mat-stroked-button [href]="getTemplateUrl()" download>
+              <mat-icon>download</mat-icon> Download Template
+            </a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Bulk Result Dialog / Drawer (Inline summary) -->
       <mat-card class="result-summary-card" *ngIf="bulkResult">
         <mat-card-content class="summary-box">
@@ -260,11 +298,17 @@ export class AssessmentsManagementComponent implements OnInit {
 
   bulkResult: AssessmentBulkResult | null = null;
 
+  // Excel upload properties
+  excelFile: File | null = null;
+  cutoffMark = 70;
+  uploadingExcel = false;
+
   constructor(
     private appService: ApplicationService,
     private testService: AssessmentService,
     private toastService: ToastService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private importService: ExcelImportService
   ) {}
 
   ngOnInit(): void {
@@ -395,5 +439,31 @@ export class AssessmentsManagementComponent implements OnInit {
         });
       }
     });
+  }
+
+  onExcelSelected(event: any): void {
+    this.excelFile = event.target.files[0] || null;
+  }
+
+  uploadExcelScores(): void {
+    if (!this.excelFile) return;
+    this.uploadingExcel = true;
+    this.importService.uploadAssessment(this.excelFile, this.cutoffMark).subscribe({
+      next: (res) => {
+        this.toastService.success(`Assessment scores processed! Imported ${res.successRows || 0} rows.`);
+        this.excelFile = null;
+        this.uploadingExcel = false;
+        this.loadEligibleApplicants();
+        this.loadAssessments();
+      },
+      error: (err) => {
+        this.toastService.error(err.error?.message || 'Failed to upload assessment scores.');
+        this.uploadingExcel = false;
+      }
+    });
+  }
+
+  getTemplateUrl(): string {
+    return this.importService.getTemplateDownloadUrl('ASSESSMENT');
   }
 }

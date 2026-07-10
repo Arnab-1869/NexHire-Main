@@ -48,6 +48,7 @@ export const API_ENDPOINTS = {
 
   // ─── Assessments ───────────────────────────────────────────────────────────
   ASSESSMENTS: {
+    BASE: `${BASE}/api/assessments`,
     ENTER_SCORE: (applicationId: number) =>
       `${BASE}/api/assessments/${applicationId}`,
     QUALIFY: (applicationId: number) =>
@@ -58,6 +59,7 @@ export const API_ENDPOINTS = {
 
   // ─── Offer Letters ─────────────────────────────────────────────────────────
   OFFERS: {
+    BASE: `${BASE}/api/offers`,
     SEND: (applicationId: number) => `${BASE}/api/offers/${applicationId}`,
     MY: `${BASE}/api/offers/my`,
     ACCEPT: (id: number) => `${BASE}/api/offers/${id}/accept`,

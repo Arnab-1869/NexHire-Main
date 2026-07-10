@@ -31,6 +31,7 @@ public class JoiningLetterService {
     private final ActivityLogRepository activityLogRepository;
     private final NotificationService notificationService;
     private final JoiningBatchCandidateRepository batchCandidateRepository;
+    private final TrainingRepository trainingRepository;
 
     @Transactional
     public JoiningLetterResponse sendJoiningLetter(Long applicationId, JoiningLetterRequest request, Long sentById) {
@@ -74,8 +75,19 @@ public class JoiningLetterService {
 
         // Decrement budget and seats atomically
         budget.setUsedSlots(budget.getUsedSlots() + 1);
-        // Deduct training cost from monetary budget (₹50,000 per candidate)
-        long trainingCostPerCandidate = 50000L;
+        
+        long trainingCostPerCandidate = 50000L; // default fallback
+        List<Training> trainings = trainingRepository.findAll();
+        if (!trainings.isEmpty()) {
+            String jobTitleLower = application.getJob().getTitle().toLowerCase();
+            Training matchedTraining = trainings.stream()
+                    .filter(t -> jobTitleLower.contains(t.getName().toLowerCase())
+                            || t.getName().toLowerCase().contains(jobTitleLower))
+                    .findFirst()
+                    .orElse(trainings.get(0));
+            trainingCostPerCandidate = matchedTraining.getCostPerCandidate().longValue();
+        }
+
         budget.setUsedAmount(budget.getUsedAmount() + trainingCostPerCandidate);
         hiringBudgetRepository.save(budget);
 
